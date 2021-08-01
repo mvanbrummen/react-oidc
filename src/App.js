@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import { AuthProvider } from 'oidc-react';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
-function App() {
+const oidcConfig = {
+  onSignIn: user => {
+    alert('You just signed in, congratz! Check out the console!');
+    // Redirect?
+    console.log(user);
+  },
+  authority: 'https://localhost:9000',  
+  clientId: 'foo-app', 
+  redirectUri: 'http://127.0.0.1:3000/', 
+  responseType: 'id_token', 
+  scope: 'openid',
+};
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+        <AuthProvider {...oidcConfig}>
+          <Switch>
+            <Route path="/dashboard">
+              <Dashboard />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+        </AuthProvider>
+    </Router>
   );
-}
+  }
 
-export default App;
+  function Home() {
+    return (<>
+    <h2>Home</h2>
+    <Link to='/dashboard'>Go to dashboard</Link>
+</>
+    )
+  }
+  function Dashboard() {
+    return <h2>Dashboard</h2>;
+  }
+  
